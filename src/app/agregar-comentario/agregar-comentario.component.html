@@ -1,0 +1,25 @@
+<div class = "container" style="width: 70%;">
+    <div class = "card">
+        <h3 class="text-center">Agregar Comentario</h3>        
+        <div class = "cadr-body">
+            <form [formGroup]="comentarioForm" (ngSubmit)="guardar()">
+                <div class="form-group">
+                    <label for="comentarioInput">Comentario</label>
+                    <input type="text" class="form-control" id="comentarioInput" placeholder="Comentario" formControlName="comentario">
+                </div>
+                <div class="form-group">
+                    <label for="calificacionInput">Calificación</label>
+                    <input type="number" class="form-control" id="calificacionInput" placeholder="Calificacion" min="1" max="5" formControlName="calificacion"> 
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <span class="float-right">
+                            <a href="#" class="btn btn-primary mr-auto" [routerLink]="['/']">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Enviar</button>        
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

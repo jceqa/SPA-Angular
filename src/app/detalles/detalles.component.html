@@ -1,0 +1,61 @@
+<div class = "container">
+    <div class = "card">
+        <div class="card-body">
+            <h3>{{pelicula.titulo}}</h3>
+            <!--span *ngFor="></span>-->
+            <span *ngFor="let g of pelicula.etiquetas" class="badge badge-primary">{{g}}</span>
+            <h4>Críticas</h4>
+            <div *ngIf="criticas.length > 0; then thenBlock else elseBlock"></div>
+            <ng-template #thenBlock>
+                <div *ngFor="let critica of criticas">
+                    <div class = "card">
+                        <div class="card-body">
+                            {{critica.usuario.last_name}}, {{critica.usuario.first_name}}
+                            <p><i>{{critica.mensaje}}</i></p>
+                            <strong>Calificacion : {{critica.calificacion}} </strong> 
+                            <p>Publicado : {{critica.creado | date}}</p>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template #elseBlock>
+                <div class = "card">
+                    <div class="card-body">
+                        La película no posee críticas.
+                    </div>
+                </div>
+            </ng-template>
+            <h4>Comentarios<button (click) = "agregarComentario()" class="btn btn-link">Agregar</button></h4>
+            <div *ngIf="comentarios.length > 0; then thenBlock2 else elseBlock2"></div>
+            <ng-template #thenBlock2>
+                <div *ngFor="let comentario of comentarios">
+                    <div class = "card">
+                        <div class="card-body">
+                            {{comentario.usuario.last_name}}, {{comentario.usuario.first_name}}
+                            <p><i>{{comentario.mensaje}}</i></p>
+                            <strong>Calificacion : {{comentario.calificacion}} </strong> 
+                            <p>Publicado : {{comentario.creado | date}}</p>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template #elseBlock2>
+                <div class = "card">
+                    <div class="card-body">
+                        La película no posee comentarios.
+                    </div>
+                </div>
+            </ng-template>
+            <div class="row">
+                <div class="col">
+                    <span class="float-right">
+                        <a href="#" class="btn btn-primary mr-auto" [routerLink]="['/']">Atrás</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
+    <p style="color: white">Cargando.. Por favor espere.</p>  
+</ngx-spinner>  

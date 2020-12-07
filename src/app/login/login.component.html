@@ -1,0 +1,30 @@
+<div class="login">
+    <h2 class="login-header">Iniciar Sesión</h2>
+    <form [formGroup]="authForm" class="login-container" (ngSubmit)="signIn()">
+        <p [ngClass]="{ 'has-error': isSubmitted && formControls.email.errors }">
+            <input type="text" placeholder="Usuario" formControlName="email">
+        </p>
+        <div *ngIf="isSubmitted && formControls.email.errors" class="help-block">
+            <div *ngIf="formControls.email.errors.required">Usuario es requerido</div>
+        </div>
+        <p [ngClass]="{ 'has-error': isSubmitted && formControls.password.errors }">
+            <input type="password" placeholder="Contraseña" formControlName="password">
+        </p>
+        <div *ngIf="isSubmitted && formControls.password.errors" class="help-block">
+            <div *ngIf="formControls.password.errors.required">Contraseña es requerido</div>
+        </div>
+        <div *ngIf="usuarioIncorrecto" class="help-block">
+            <div>El nombre de usuario y/o contraseña son incorrectos.</div>
+        </div>
+        <input type="submit" value="Aceptar">
+        <!--<input type="submit" value="Cancelar">
+        <div class="row"></div>
+            <div class="col-md-6">
+                <a href="#" class="btn btn-primary" [routerLink]="['/']">Atrás</a>
+            </div>
+            <div class="col-md-6">
+                <a href="#" class="btn btn-secondary" [routerLink]="['/']">Atrás</a>
+            </div>
+        </div>-->
+    </form>
+</div>

@@ -1,0 +1,78 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { Comentario } from '../comentario';
+import { Critica } from '../critica';
+import { Pelicula } from '../pelicula';
+import { PeliculaService } from '../pelicula.service';
+
+@Component({
+  selector: 'app-detalles',
+  templateUrl: './detalles.component.html',
+  styleUrls: ['./detalles.component.sass']
+})
+export class DetallesComponent implements OnInit {
+
+  id! : number;
+
+  pelicula! : Pelicula;
+  comentarios: Comentario[] = [];
+  criticas : Critica[] = [];
+
+  constructor(private route: ActivatedRoute,
+              private router: Router,
+              private peliculaService: PeliculaService,
+              private SpinnerService: NgxSpinnerService)  { 
+    this.route.params.subscribe( 
+      params =>
+      this.id = params.id 
+    );
+  }
+
+  ngOnInit(): void {
+    this.consultarPeliculaCompleta(this.id);
+  }
+
+  consultarPeliculaCompleta(id : number){
+    this.SpinnerService.show();
+    this.peliculaService.getPelicula(id).subscribe(
+      data =>  {
+        this.pelicula = data;
+        this.SpinnerService.hide();
+      },
+      err => {
+        console.log(err.error);
+        this.SpinnerService.hide();
+      }
+    );
+
+    this.SpinnerService.show();
+    this.peliculaService.getCriticas(id).subscribe(
+      data =>  {
+        this.criticas = data;
+        this.SpinnerService.hide();
+      },
+      err => {
+        console.log(err.error);
+        this.SpinnerService.hide();
+      }
+    );
+
+    this.SpinnerService.show();
+    this.peliculaService.getComentarios(id).subscribe(
+      data =>  {
+        this.comentarios = data;
+        this.SpinnerService.hide();
+      },
+      err => {
+        console.log(err.error); 
+        this.SpinnerService.hide();
+      }
+    );
+  }
+
+  agregarComentario(){
+    this.router.navigate([`/nuevo-comentario/${this.id}`], { relativeTo: this.route.parent });
+  }
+
+}
