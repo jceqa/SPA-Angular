@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Comentario } from '../comentario';
 import { ComentarioService } from '../comentario.service';
+import { DetallesComponent } from '../detalles/detalles.component';
 
 @Component({
   selector: 'app-agregar-comentario',
@@ -11,41 +11,37 @@ import { ComentarioService } from '../comentario.service';
 })
 export class AgregarComentarioComponent implements OnInit {
 
-  id! : number;
-
-  comentarioForm!: FormGroup;
-
-  comentario! : Comentario;
+  comentario : Comentario = new Comentario();
   
   headers! : {};
 
   token! : string;
 
-  constructor(private formBuilder: FormBuilder,
-              private route: ActivatedRoute,
-              private router: Router,
-              private comentarioService : ComentarioService) {
-    this.route.params.subscribe( 
-      params =>
-      this.id = params.id 
-    );
-  }
+  texto! : string;
 
-  ngOnInit(): void {
-    this.comentarioForm  =  this.formBuilder.group({
-      comentario: [''],
-      calificacion: ['']
-    });
+  cals = [1, 2, 3, 4, 5];
+
+  selectedCal! : number;
+
+  constructor(private comentarioService : ComentarioService,
+              public dialogRef: MatDialogRef<DetallesComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any
+              ) {}
+
+  ngOnInit(): void {}
+
+  onNoClick(): void {
+    console.log("Desde el modal" + this.data.id)
+    this.dialogRef.close();
   }
 
   guardar(){
-    console.log(this.comentarioForm.value);
-    this.comentario = new Comentario();
-    this.comentario.calificacion = this.comentarioForm.value.calificacion;
-    this.comentario.mensaje = this.comentarioForm.value.comentario;
-    this.comentario.pelicula = this.id;
+    this.comentario.calificacion = this.selectedCal;
+    this.comentario.pelicula = this.data.id;
+    console.log(this.comentario);
     console.log(localStorage.getItem('ACCESS_TOKEN'));
     this.token = JSON.stringify(localStorage.getItem('ACCESS_TOKEN') || "");
+    this.token = this.token.replace(/['"]+/g, '');
     //this.token = "fvWQCYvc44ejQySeJwxt7ntloExrcxd3BD6jTmSaH1dSGmdlbnwhuVw2LmhdvKSO";
     console.log(this.token);
     this.comentarioService.guardar(this.comentario, this.token).subscribe(data => {

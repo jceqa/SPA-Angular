@@ -5,11 +5,13 @@ import { Comentario } from '../comentario';
 import { Critica } from '../critica';
 import { Pelicula } from '../pelicula';
 import { PeliculaService } from '../pelicula.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AgregarComentarioComponent } from '../agregar-comentario/agregar-comentario.component';
 
 @Component({
   selector: 'app-detalles',
   templateUrl: './detalles.component.html',
-  styleUrls: ['./detalles.component.sass']
+  styleUrls: ['./detalles.component.css']
 })
 export class DetallesComponent implements OnInit {
 
@@ -22,7 +24,8 @@ export class DetallesComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private router: Router,
               private peliculaService: PeliculaService,
-              private SpinnerService: NgxSpinnerService)  { 
+              private SpinnerService: NgxSpinnerService,
+              public dialog: MatDialog)  { 
     this.route.params.subscribe( 
       params =>
       this.id = params.id 
@@ -69,6 +72,17 @@ export class DetallesComponent implements OnInit {
         this.SpinnerService.hide();
       }
     );
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(AgregarComentarioComponent, {
+      width: '40%',
+      data: {id: this.id}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Se cerro el modal');
+    });
   }
 
   agregarComentario(){

@@ -1,25 +1,20 @@
-<div class = "container" style="width: 70%;">
-    <div class = "card">
-        <h3 class="text-center">Agregar Comentario</h3>        
-        <div class = "cadr-body">
-            <form [formGroup]="comentarioForm" (ngSubmit)="guardar()">
-                <div class="form-group">
-                    <label for="comentarioInput">Comentario</label>
-                    <input type="text" class="form-control" id="comentarioInput" placeholder="Comentario" formControlName="comentario">
-                </div>
-                <div class="form-group">
-                    <label for="calificacionInput">Calificación</label>
-                    <input type="number" class="form-control" id="calificacionInput" placeholder="Calificacion" min="1" max="5" formControlName="calificacion"> 
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <span class="float-right">
-                            <a href="#" class="btn btn-primary mr-auto" [routerLink]="['/']">Cancelar</a>
-                            <button type="submit" class="btn btn-primary">Enviar</button>        
-                        </span>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+<h1 mat-dialog-title>Agregar Comentario</h1>
+<div mat-dialog-content>
+  <mat-form-field style="width: 100%;">
+    <mat-label>Comentario</mat-label>
+    <textarea matInput [(ngModel)]="comentario.mensaje"></textarea>
+  </mat-form-field>
+  <br>
+  <mat-form-field style="width: 100%;">
+    <mat-label>Calificación</mat-label>
+    <mat-select [(ngModel)]="selectedCal" name="cal">
+      <mat-option *ngFor="let c of cals" [value]="c">
+          {{c}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-button mat-raised-button color="warn" (click)="onNoClick()">Cancelar</button>
+    <button mat-button mat-raised-button color="primary" [mat-dialog-close]="data.id" (click)="guardar()">Aceptar</button>
 </div>

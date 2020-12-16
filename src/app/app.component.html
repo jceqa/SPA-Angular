@@ -1,8 +1,11 @@
-<nav class="navbar navbar-light bg-dark">
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
     <a class="navbar-brand" href="#" style="color: white;">Lista de Películas</a>
-    <form class="form-inline">
-        <!--<label for="btn-sesion" style="color: white; padding-right: 1em;">Bienvenido, {{usuario}}</label>-->
-        <a class="btn btn-outline-success my-2 my-sm-0" [routerLink]="['/login']">Iniciar Sesión</a>
-      </form>
-</nav>
+    <span class="example-spacer"></span>
+    <label for="btn-sesion" style="color: white; padding-right: 1em;">Bienvenido, {{usuario}}</label>
+    <!--<a class="btn btn-primary my-2 my-sm-0" [routerLink]="['/login']">Iniciar Sesión</a>-->
+    <button *ngIf="!estaLogueado" class="btn btn-success my-2 my-sm-0" mat-raised-button (click) = "openLogin()">Iniciar Sesión</button>
+    <button *ngIf="estaLogueado" mat-raised-button class="btn btn-danger my-2 my-sm-0" (click) = "signOut()">Cerrar Sesión</button>
+  </mat-toolbar-row>
+</mat-toolbar>
 <router-outlet></router-outlet>

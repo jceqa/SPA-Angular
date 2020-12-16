@@ -1,15 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Pelicula } from '../pelicula';
 import { PeliculaService } from '../pelicula.service';
-import { NgxSpinnerService } from "ngx-spinner";
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-pelicula',
   templateUrl: './pelicula.component.html',
-  styleUrls: ['./pelicula.component.sass']
+  styleUrls: ['./pelicula.component.css']
 })
 export class PeliculaComponent implements OnInit {
+  
+  displayedColumns: string[] = ['titulo', 'etiquetas', 'opciones'];
+
+  dataSource = new MatTableDataSource<any>();
+  
+  resultsLength = 0;
+  isLoadingResults = true;
+
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
 
   peliculas: Pelicula[] = [];
 
@@ -28,8 +39,7 @@ export class PeliculaComponent implements OnInit {
 
   constructor(private peliculaService: PeliculaService, 
               private router: Router, 
-              private route: ActivatedRoute,
-              private SpinnerService: NgxSpinnerService) 
+              private route: ActivatedRoute) 
               { }
 
   ngOnInit(): void {
@@ -37,41 +47,58 @@ export class PeliculaComponent implements OnInit {
   }
 
   cargarPeliculas(){
-    this.SpinnerService.show();
+    this.isLoadingResults = true;
     this.peliculaService.listPeliculas(this.numeroResultados, this.pagina*this.numeroResultados).subscribe(
       data => {
         this.totalPeliculas = data.count;
         this.peliculas = data.results;
-        this.totalPaginas = new Array(Math.ceil(this.totalPeliculas/this.numeroResultados));
-        this.maxPaginas = Math.floor(this.totalPeliculas/this.numeroResultados);
-        this.SpinnerService.hide(); 
+        this.peliculas.length = data.count;
+        this.dataSource = new MatTableDataSource<any>(this.peliculas);
+        this.dataSource.paginator = this.paginator;
+        //this.totalPaginas = new Array(Math.ceil(this.totalPeliculas/this.numeroResultados));
+        //this.maxPaginas = Math.floor(this.totalPeliculas/this.numeroResultados);
+        this.isLoadingResults = false;
       },
       err => {
+        this.isLoadingResults = false;
         console.log(err.error);
-        this.SpinnerService.hide(); 
       }
     );
   }
 
-  siguiente(): void{
-    this.pagina++;
-    this.cargarPeliculas();
+  getNextData(currentSize : number, offset : number, limit : number ){
+    this.isLoadingResults = true;
+    this.peliculaService.listPeliculas(limit, offset*limit).subscribe(
+      data => {
+
+        this.isLoadingResults = false;
+
+        this.peliculas.length = currentSize;
+        this.peliculas.push(...data.results);
+
+        this.peliculas.length = data.count;
+
+        this.dataSource = new MatTableDataSource<any>(this.peliculas);
+        this.dataSource._updateChangeSubscription();
+
+        this.dataSource.paginator = this.paginator;
+      },
+      err => {
+        this.isLoadingResults = false;
+        console.log(err.error);
+      }
+    );
   }
 
-  anterior(): void{
-    this.pagina--;
-    this.cargarPeliculas();
-  }
+  pageChanged(event: any){
+    this.isLoadingResults  = true;
 
-  setearPagina(pagina: number) : void{
-    this.pagina = pagina;
-    this.cargarPeliculas();
-  }
+    let pageIndex = event.pageIndex;
+    let pageSize = event.pageSize;
 
-  cambiarNumeroPeliculas(event : any): void {
-    this.numeroResultados = event.target.value;
-    this.pagina = 0;
-    this.cargarPeliculas();
+    let previousSize = pageSize * pageIndex;
+
+    this.getNextData(previousSize ,(pageIndex).toString(), pageSize.toString());
   }
 
   obtenerId(titulo : string) {

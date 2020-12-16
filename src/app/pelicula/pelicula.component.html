@@ -2,41 +2,48 @@
     <div class = "card">
         <!--<h3 class="text-center">Lista de Películas</h3>-->
         <div class = "cadr-body">
-            <div class="d-flex flex-row-reverse bd-highlight mb-2">
-                <div class="p-2 bd-highlight">
-                    <label for="selectCantidad" class="d-inline-block">Cantidad de Items</label>
-                    <select name="selectCantidad" (change)="cambiarNumeroPeliculas($event)" class="custom-select d-inline-block">
-                        <option [value]="5">5</option>
-                        <option [value]="10" [selected] ="true">10</option>
-                        <option [value]="20">20</option>
-                        <option [value]="50">50</option>
-                    </select>
+            <div class="contenedor mat-elevation-z8">
+                <div class="loading-shade" *ngIf="isLoadingResults">
+                  <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
                 </div>
-            </div>
-            <table class="table table-striped text-center">
-                <thead>
-                    <th>Título</th>
-                    <th>Etiquetas</th>
-                    <th></th>
-                </thead>
-                <tbody>
-                    <tr *ngFor = "let pelicula of peliculas" (click) = "obtenerId(pelicula.titulo)">
-                        <td>{{ pelicula.titulo}}</td>
-                        <td>{{ pelicula.etiquetas}}</td>
-                        <td><button (click) = "obtenerId(pelicula.titulo)" class="btn btn-link">Ver más</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <ul class="pagination justify-content-end" style="margin:20px 0">
-                <li class="page-item" [ngClass]="{'disabled': pagina === 0 }"><a class="page-link" href="#" (click)="anterior()">Anterior</a></li>
-                <span *ngFor="let p of totalPaginas; let i = index">
-                    <li class="page-item" [ngClass]="{'active': i === pagina }"><a class="page-link" href="#" (click)="setearPagina(i)">{{ i + 1 }}</a></li>
-                </span>
-                <li class="page-item" [ngClass]="{'disabled': pagina === maxPaginas}"><a class="page-link" href="#" (click)="siguiente()">Siguiente</a></li>
-            </ul>
+            
+                <div class="table-container">
+              
+                    <table mat-table [dataSource]="dataSource" class="table table-striped text-center">
+                    <!-- Number Column -->
+                    <ng-container matColumnDef="titulo">
+                      <th mat-header-cell *matHeaderCellDef class="text-center fix-head"><h4><strong>Título</strong></h4></th>
+                      <td mat-cell *matCellDef="let row" class="texto-tabla">{{row.titulo}}</td>
+                    </ng-container>
+              
+                    <!-- Title Column -->
+                    <ng-container matColumnDef="etiquetas">
+                      <th  mat-header-cell *matHeaderCellDef class="text-center fix-head"><h4><strong>Etiquetas</strong></h4></th>
+                      <td mat-cell *matCellDef="let row" class="texto-tabla"><i>{{row.etiquetas}}</i></td>
+                    </ng-container>
+              
+                    <!-- State Column -->
+                    <ng-container matColumnDef="opciones">
+                        <th mat-header-cell *matHeaderCellDef class="text-center fix-head"><h4><strong>Opciones</strong></h4></th>
+                        <td mat-cell *matCellDef="let row">
+                            <button (click) = "obtenerId(row.titulo)" class="btn btn-link">
+                                Detalles<mat-icon aria-hidden="false" aria-label="Example home icon">open_in_new</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+              
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                  </table>
+                </div>
+              
+                <mat-paginator [length]="totalPeliculas" 
+                               [pageSize]="10" 
+                               [pageSizeOptions]="[5, 10, 20, 50]" 
+                               showFirstLastButtons
+                               (page)=pageChanged($event)></mat-paginator>
+              </div>   
         </div>
     </div>
 </div>
-<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="default" type="ball-spin-clockwise">
-    <p style="color: white">Cargando.. Por favor espere.</p>  
-</ngx-spinner>  
+

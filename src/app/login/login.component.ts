@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from  '@angular/forms';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from  '@angular/router';
 import { Usuario } from  '../usuario';
 import { AuthService } from  '../auth.service';
+import { AppComponent } from '../app.component';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { NotificadorService } from 'src/notificador.service';
 
 @Component({
   selector: 'app-login',
@@ -11,49 +13,45 @@ import { AuthService } from  '../auth.service';
 })
 export class LoginComponent implements OnInit {
 
+  message! : string;
+
   constructor(private authService: AuthService, 
-              private router: Router, 
-              private formBuilder: FormBuilder ) 
+              private router: Router,
+              public dialogRef: MatDialogRef<AppComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any,
+              private notif: NotificadorService) 
               { }
 
-  authForm!: FormGroup;
-  isSubmitted  =  false;
   usuarioIncorrecto = false;
 
-  usuario! : Usuario;
+  usuario : Usuario = new Usuario();
 
   ngOnInit(): void {
-    this.authForm  =  this.formBuilder.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required]
-    });
+    this.notif.currentMessage.subscribe(message => this.message = message)
   }
 
-  get formControls() { 
-    return this.authForm.controls; 
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 
   signIn(){
-    this.isSubmitted = true;
-    if(this.authForm.invalid){
-      return;
-    }
-    this.usuario = new Usuario();
-    this.usuario.username = this.authForm.value.email;
-    this.usuario.password = this.authForm.value.password;
+    console.log(this.usuario);
     this.authService.signIn(this.usuario).subscribe(data => {
       this.usuarioIncorrecto = false;
-      console.log(data);
+      this.newMessage("logueado");
       localStorage.setItem('ACCESS_TOKEN', data.access);
       localStorage.setItem('REFRESH_TOKEN', data.refresh);
       localStorage.setItem('USER_NAME', this.usuario.username);
-      this.router.navigateByUrl('/')
+      this.dialogRef.close();
     }, 
     error => {
       console.error('There was an error!', error);
       this.usuarioIncorrecto = true;
     });
+  }
 
+  newMessage(msg : string) {
+    this.notif.changeMessage(msg)
   }
 
 }
